@@ -1,22 +1,24 @@
 package com.egg.biblioteca.entidades;
+import java.util.UUID;
+
 import jakarta.persistence.*;
 
 @Entity
 public class Editorial{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private String id;
+    private UUID id;
 
     private String nombre;
 
     public Editorial() {
     }
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

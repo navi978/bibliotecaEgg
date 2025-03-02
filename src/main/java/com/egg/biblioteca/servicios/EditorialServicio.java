@@ -30,7 +30,7 @@ public class EditorialServicio {
 
     @Transactional
     private void validar(String nombre) throws MiException {
-        if (nombre.isEmpty() || nombre==null){
+        if (nombre==null || nombre.isEmpty()){
             throw new MiException("El nombre de la editorial no puede ser nulo o estar vacío");
         }
     }
