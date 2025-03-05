@@ -1,5 +1,2 @@
 use biblioteca;
-ALTER TABLE libro DROP FOREIGN KEY FK79q7g2604hcmfdxw6ek3jt4el;
-ALTER TABLE editorial MODIFY COLUMN id BINARY(16) NOT NULL;
-ALTER TABLE libro MODIFY COLUMN editorial_id BINARY(16) NOT NULL;
-ALTER TABLE libro ADD CONSTRAINT FK79q7g2604hcmfdxw6ek3jt4el FOREIGN KEY (editorial_id) REFERENCES editorial(id);
+SELECT * FROM autor;

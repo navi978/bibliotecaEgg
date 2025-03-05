@@ -34,14 +34,28 @@ public class LibroControlador {
     }
 
     @PostMapping("/registro")
-    public String registro(@RequestParam(required = false) Long isbn, @RequestParam String titulo, @RequestParam(required = false) Integer ejemplares, @RequestParam UUID idAutor, @RequestParam String idEditorial, ModelMap modelo){
+    public String registro(@RequestParam(required = false) Long isbn, @RequestParam String titulo, @RequestParam(required = false) Integer ejemplares, @RequestParam String idAutor, @RequestParam String idEditorial, ModelMap modelo){
         try {
-            libroServicio.crearLibro(isbn, titulo, ejemplares, idAutor, idEditorial);
-
+            // Handle invalid UUID
+            UUID uuidAutor = null;
+    
+            // Check if idAutor is valid and not "Seleccionar Autor"
+            if (idAutor != null && !idAutor.equals("Seleccionar Autor")) {
+                uuidAutor = UUID.fromString(idAutor); // Convert String to UUID
+            }
+    
+            // If the UUID is invalid or not selected, return an error or handle accordingly
+            if (uuidAutor == null) {
+                modelo.put("error", "Debe seleccionar un autor válido.");
+                return "libro_form.html"; // Or another view to display the error
+            }
+    
+            libroServicio.crearLibro(isbn, titulo, ejemplares, uuidAutor, idEditorial);
             modelo.put("exito", "El libro fue cargado correctamente");
-
+        } catch (IllegalArgumentException ex) {
+            modelo.put("error", "El ID del autor no es válido.");
+            return "libro_form.html";
         } catch (MiException ex) {
-
             modelo.put("error", ex.getMessage());
             return "libro_form.html";
         }
