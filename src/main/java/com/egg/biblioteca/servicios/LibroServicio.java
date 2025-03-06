@@ -29,11 +29,18 @@ public class LibroServicio {
     private EditorialRepositorio editorialRepositorio;
 
     @Transactional
-    public void crearLibro(Long isbn, String titulo, Integer ejemplares, UUID idAutor, String idEditorial)
+    public void crearLibro(Long isbn, String titulo, Integer ejemplares, UUID idAutor, UUID idEditorial)
             throws MiException {
         validar(isbn, titulo, ejemplares, idAutor, idEditorial);
-        Autor autor = autorRepositorio.findById(idAutor).get();
-        Editorial editorial = editorialRepositorio.findById(idEditorial).get();
+
+        // Autor autor = autorRepositorio.findById(idAutor).get();
+        // Editorial editorial = editorialRepositorio.findById(idEditorial).get();
+
+        Autor autor = autorRepositorio.findById(idAutor)
+                .orElseThrow(() -> new MiException("Autor no encontrado con ID: " + idAutor));
+
+        Editorial editorial = editorialRepositorio.findById(idEditorial)
+                .orElseThrow(() -> new MiException("Editorial no encontrada con ID: " + idEditorial));
 
         Libro libro = new Libro();
         libro.setIsbn(isbn);
@@ -46,11 +53,12 @@ public class LibroServicio {
     }
 
     @Transactional
-    private void validar(Long isbn, String titulo, Integer ejemplares, UUID idAutor, String idEditorial) throws MiException {
-        if (isbn == null ){
+    private void validar(Long isbn, String titulo, Integer ejemplares, UUID idAutor, UUID idEditorial)
+            throws MiException {
+        if (isbn == null) {
             throw new MiException("No se puede generar la acción, el isbn está nulo o vacío");
         }
-        if (titulo.isEmpty() || titulo==null) {
+        if (titulo.isEmpty() || titulo == null) {
             throw new MiException("el titulo no puede ser nulo o estar vacio");
         }
         if (ejemplares == null) {
@@ -59,7 +67,7 @@ public class LibroServicio {
         if (idAutor == null) {
             throw new MiException("el Autor no puede ser nulo o estar vacio");
         }
-        if (idEditorial.isEmpty() || idEditorial==null) {
+        if (idEditorial == null) {
             throw new MiException("La Editorial no puede ser nula o estar vacia");
         }
     }
@@ -72,7 +80,7 @@ public class LibroServicio {
     }
 
     @Transactional
-    public void modificarLibro(Long isbn, String titulo, Integer ejemplares, UUID idAutor, String idEditorial)
+    public void modificarLibro(Long isbn, String titulo, Integer ejemplares, UUID idAutor, UUID idEditorial)
             throws MiException {
         validar(isbn, titulo, ejemplares, idAutor, idEditorial);
         Optional<Editorial> respuesta = editorialRepositorio.findById(idEditorial);

@@ -3,6 +3,8 @@ package com.egg.biblioteca.servicios;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,13 +32,13 @@ public class EditorialServicio {
 
     @Transactional
     private void validar(String nombre) throws MiException {
-        if (nombre==null || nombre.isEmpty()){
+        if (nombre==null){
             throw new MiException("El nombre de la editorial no puede ser nulo o estar vacío");
         }
     }
 
     @Transactional
-    public void modificarEditorial(String nombre, String id) throws MiException{
+    public void modificarEditorial(String nombre, UUID id) throws MiException{
         validar(nombre);
         Optional<Editorial> respuesta = editorialRespositorio.findById(id);
         if (respuesta.isPresent()) {
