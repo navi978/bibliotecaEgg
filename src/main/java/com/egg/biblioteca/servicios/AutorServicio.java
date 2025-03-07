@@ -50,4 +50,10 @@ public class AutorServicio {
             autorRepositorio.save(autor);
         }
     }
+
+    @Transactional(readOnly=true)
+    public Autor getOne(String id){
+        UUID uuidAutor = UUID.fromString(id);
+        return autorRepositorio.getReferenceById(uuidAutor);
+    }
 }

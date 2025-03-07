@@ -102,4 +102,8 @@ public class LibroServicio {
         }
     }
 
+    @Transactional(readOnly = true)
+    public Libro getOne(Long id) {
+        return libroRepositorio.getReferenceById(id);
+    }
 }
