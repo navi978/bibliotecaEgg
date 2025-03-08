@@ -5,3 +5,4 @@ SELECT * FROM editorial;
 DELETE * FROM editorial WHERE nombre="Penguin Random House";
 
 SELECT * FROM libro;
+SELECT * FROM usuario;

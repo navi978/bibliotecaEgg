@@ -126,7 +126,7 @@ public class LibroControlador {
 
             UUID uuidAutor = UUID.fromString(idAutor);
             UUID uuidEditorial = UUID.fromString(idEditorial);
-
+            
             libroServicio.modificarLibro(isbn, titulo, ejemplares, uuidAutor, uuidEditorial);
             
             return "redirect:../lista";
