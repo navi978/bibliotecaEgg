@@ -10,10 +10,12 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 
 @Entity
 public class Usuario {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -24,6 +26,10 @@ public class Usuario {
 
     @Enumerated(EnumType.STRING)
     private Rol rol;
+
+    @OneToOne
+    @JoinColumn(name = "imagen_id")
+    private Imagen imagen;
 
     public Usuario() {
     }
@@ -68,5 +74,12 @@ public class Usuario {
         this.rol = rol;
     }
 
-    
+    public Imagen getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(Imagen imagen) {
+        this.imagen = imagen;
+    }
+
 }

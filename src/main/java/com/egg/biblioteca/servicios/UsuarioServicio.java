@@ -17,12 +17,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.egg.biblioteca.entidades.Imagen;
 import com.egg.biblioteca.entidades.Usuario;
 import com.egg.biblioteca.enumeraciones.Rol;
 import com.egg.biblioteca.excepciones.MiException;
+import com.egg.biblioteca.repositorios.ImagenRepositorio;
 import com.egg.biblioteca.repositorios.UsuarioRepositorio;
 import jakarta.servlet.http.HttpSession;
-
 
 @Service
 public class UsuarioServicio implements UserDetailsService {
@@ -30,8 +33,15 @@ public class UsuarioServicio implements UserDetailsService {
     @Autowired
     UsuarioRepositorio usuarioRepositorio;
 
+    @Autowired
+    ImagenRepositorio imagenRepositorio;
+
+    @Autowired
+    ImagenServicio imagenServicio;
+
     @Transactional
-    public void registrar(String nombre, String email, String password, String password2) throws MiException {
+    public void registrar(MultipartFile archivo, String nombre, String email, String password, String password2)
+            throws MiException {
         try {
             validar(nombre, email, password, password2);
 
@@ -41,6 +51,11 @@ public class UsuarioServicio implements UserDetailsService {
             usuario.setPassword(new BCryptPasswordEncoder().encode(password));
             usuario.setRol(Rol.USER);
 
+            if (archivo != null) {
+            Imagen imagen = imagenServicio.guardar(archivo);
+            usuario.setImagen(imagen);
+            }
+            
             usuarioRepositorio.save(usuario);
         } catch (Exception e) {
             throw new MiException("Error al registrar el usuario: " + e.getMessage());
@@ -93,18 +108,55 @@ public class UsuarioServicio implements UserDetailsService {
     }
 
     @Transactional
-    public void cambiarRol(String id){
+    public void cambiarRol(String id) {
         UUID uuidUsuario = UUID.fromString(id);
         Optional<Usuario> respuesta = usuarioRepositorio.findById(uuidUsuario);
-        
+
         if (respuesta.isPresent()) {
             Usuario usuario = respuesta.get();
 
-            if(usuario.getRol().toString().equals("USER")) {
+            if (usuario.getRol().toString().equals("USER")) {
                 usuario.setRol(Rol.ADMIN);
-            } else if(usuario.getRol().toString().equals("ADMIN")) {
+            } else if (usuario.getRol().toString().equals("ADMIN")) {
                 usuario.setRol(Rol.USER);
             }
         }
     }
+
+    public void actualizar(MultipartFile archivo, String nombre, String email, String password, String password2,
+            String usuarioId) throws Exception {
+
+        validar(nombre, email, password, password2);
+        UUID uuidUsuario = UUID.fromString(usuarioId);
+        Optional<Usuario> respuesta = usuarioRepositorio.findById(uuidUsuario);
+
+        if (!respuesta.isPresent()) {
+            return;
+        }
+
+        Usuario usuario = respuesta.get();
+
+        usuario.setEmail(email);
+        usuario.setNombre(nombre);
+        usuario.setPassword(new BCryptPasswordEncoder().encode(password));
+        usuario.setRol(Rol.USER);
+
+        UUID imagenId = null;
+        if (usuario.getImagen() != null) {
+            imagenId = usuario.getImagen().getId();
+        }
+
+        Imagen imagen = imagenServicio.actualizar(archivo, imagenId);
+
+        usuario.setImagen(imagen);
+
+        usuarioRepositorio.save(usuario);
+    }
+
+    @Transactional(readOnly=true)
+    public Usuario getOne(String id){
+        UUID uuidUsuario = UUID.fromString(id);
+        return usuarioRepositorio.getReferenceById(uuidUsuario);
+    }
+    
 }
